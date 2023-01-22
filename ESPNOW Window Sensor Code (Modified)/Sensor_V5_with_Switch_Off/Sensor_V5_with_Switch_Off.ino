@@ -23,7 +23,7 @@ const int powerOff = 16; // set to low to turn off LDO
 typedef struct struct_message {
   int id;
   char state[7];
-  float vBatt;      //i changed this to an def to get decimal Numbers
+  float vBatt;      //i changed this typedef to float, to get decimal Numbers
   float Temp;
   float Humid;
 } struct_message;

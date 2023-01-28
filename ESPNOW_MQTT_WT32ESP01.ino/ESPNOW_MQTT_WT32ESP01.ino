@@ -1,5 +1,5 @@
 /****************************************************************************************************************************
-  ESPNOW_MQTT_WT32ESP01.ino
+  FullyFeatureWT32_ETH01_ESP32.ino
 
   AsyncMQTT_ESP32 is a library for ESP32 boards using WiFi or LwIP W5500, LAN8720 or ENC28J60
 
@@ -9,17 +9,7 @@
   2) async-mqtt-client (https://github.com/khoih-prog/AsyncMQTT_Generic)
 
   Built by Khoi Hoang https://github.com/khoih-prog/AsyncMQTT_ESP32
-
-  Modified by Mordi1984 (https://github.com/Mordi1984/ESPNOW2WT32ETH1-MQTT/)
-  I that Code to work with "ESP-NOW" from (https://github.com/espressif/esp-idf/blob/master/components/esp_wifi/include/esp_now.h)
-
-  Published MQTT Message looks like: 
-  ESPNOW/1 //The Board-ID is the Topic - Here Board-ID 1
-  MQTT Message looks like this:
-  {"id":1,"state":"Open","vBatt":3.482795715,"Temp":0,"Humid":0}
-  {"id":1,"state":"Closed","vBatt":3.482795715,"Temp":0,"Humid":0}
-
-   *****************************************************************************************************************************/
+ *****************************************************************************************************************************/
 /*
   This example uses FreeRTOS softwaretimers as there is no built-in Ticker library
 */
@@ -38,7 +28,6 @@ extern "C"
 #include <AsyncMQTT_ESP32.h>
 #include <AsyncHTTPRequest_Generic.h>
 #include <AsyncHTTPRequest_Generic.hpp>
-
 
 #define SENDTOPIC "ESPNow/key"
 #define COMMANDTOPIC "ESPNow/command"
@@ -60,11 +49,11 @@ struct_message myData;
 volatile boolean haveReading = false;
 
 
-#define MQTT_HOST         IPAddress(192, 168, 0, 255)
+#define MQTT_HOST         IPAddress(192, 168, 178, 10)
 //#define MQTT_HOST         "broker.emqx.io"        // Broker address
 #define MQTT_PORT         1883
-#define MQTT_USERNAME "openhabforExample"
-#define MQTT_PASSWORD "Your-Special-MQTT-Password-Here"
+#define MQTT_USERNAME "yourbroker"
+#define MQTT_PASSWORD "1234"
 #define MQTT_CLIENT_ID "ESPNOW"
 
 //const char *PubTopic  = "ESPNOW/";               // Topic to publish
@@ -295,7 +284,14 @@ void setup()
 }
 
 void loop(){
+  // Check if the Ethernet and MQTT connections are still active
+  if (!mqttClient.connected()) {
+    // MQTT connection lost, attempt to reconnect
+   delay(5000);
+    mqttClient.connect();
+  }
 }
+
 // callback function that will be executed when data is received
 void OnDataRecv(const uint8_t* mac_addr, const uint8_t* incomingData, int len) {
   // Update the structures with the new incoming data
